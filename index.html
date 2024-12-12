@@ -1,0 +1,41 @@
+<DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewpoint" content="width=device-width,initial-scale=1.0">
+            <title>Todo App</title>
+        </head>
+        <body>
+            <h1>Todo List</h1>
+            <ol id="todo-list"></ol>
+            <input type="text" id="new-task" placeholder="Enter a new task"/>
+            <button onclick="addTodo()">Add Task</button>
+
+            <script>
+                async function fetchTodos(){
+                    const response=await fetch("/api/todoslist");
+                    const todos=await response.json();
+                    const list=document.getElementById("todo-list");
+                    list.innerHTML="";
+                    todos.forEach(todo=>{
+                        const lt=document.createElement("li");
+                        lt.textContent=`${todo.task}(${todo.completed?"Completed":"Pending"})`;
+                        list.appendChild(lt);
+                    });
+                }
+
+                async function addTodo(){
+                    const task=document.getElementById("new-task").value;
+                    await fetch("/api/addtodos/"+task,{
+                        method:"POST",
+                        headers:{"Content-Type":"application/json"},
+                        body:JSON.stringify({task}),
+                    });
+                    document.getElementById("new-task").value="";
+                    fetchTodos();
+                }
+                fetchTodos();
+            </script>
+        </body>
+    </html>
+</DOCTYPE>
